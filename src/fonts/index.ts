@@ -1,19 +1,24 @@
 import * as fontManager from "font-manager"
 import * as fontkit from "fontkit"
 import * as fs from "fs"
-import {FontCache} from './'
 
 const weights = {
   normal: "400",
   bold: "700"
 }
 
+const fonts = {}
+const fontFallbacks = {}
+
 const numberWeight = weight => weights[weight] || weight
 
 const keyFor = ({ fontFamily, fontWeight, fontStyle }) =>
   `${fontFamily} (weight: ${numberWeight(fontWeight)} style: ${fontStyle})`
 
-interface NameMatch { match: string, value: string }
+interface NameMatch {
+  match: string
+  value: string
+}
 
 const weightNames = [
   { match: "thin", value: "100" },
@@ -33,74 +38,81 @@ const weightNames = [
   { match: "600", value: "600" },
   { match: "700", value: "700" },
   { match: "800", value: "800" },
-  { match: "900", value: "900" },
+  { match: "900", value: "900" }
 ]
 
 const italicNames = [
   { match: "italic", value: "italic" },
-  { match: "oblique", value: "italic" },
+  { match: "oblique", value: "italic" }
 ]
 
-const matchNames = (target: string, names: NameMatch[], defaultValue: string): string => {
+const matchNames = (
+  target: string,
+  names: NameMatch[],
+  defaultValue: string
+): string => {
   const match = names.find(name => target.toLowerCase().includes(name.match))
   return match ? match.value : defaultValue
 }
 
-const addFont = (fontState: FontCache, font, style) => {
+const addFont = (font, style) => {
   const fontFamily = style.fontFamily || font.familyName
-  const fontWeight = style.fontWeight || matchNames(font.subfamilyName, weightNames, "400")
-  const fontStyle = style.fontStyle || matchNames(font.subfamilyName, italicNames, "normal")
+  const fontWeight =
+    style.fontWeight || matchNames(font.subfamilyName, weightNames, "400")
+  const fontStyle =
+    style.fontStyle || matchNames(font.subfamilyName, italicNames, "normal")
   const key = keyFor({ fontFamily, fontWeight, fontStyle })
 
   if (!fontFamily || !fontWeight || !fontStyle) {
     throw new Error(`Could not find styles for font: ${key}`)
   }
 
-  fontState.fonts[key] = font
+  fonts[key] = font
 }
 
-export const initFontCache = () => ({fonts: {}, fallbacks: {}});
-
 export const loadFont = (
-  fontState: FontCache,
-  fontFile: Buffer,
-  style: { fontFamily?: string, fontWeight?: string, fontStyle?: string, postscriptName?: string } = {}
+  fontFile,
+  style: {
+    fontFamily?: string
+    fontWeight?: string
+    fontStyle?: string
+    postscriptName?: string
+  } = {}
 ) => {
   const font = fontkit.create(fontFile, style.postscriptName)
   if (font.fonts) {
-    font.fonts.forEach(f => addFont(fontState, f, { fontFamily: style.fontFamily }))
+    font.fonts.forEach(f => addFont(f, { fontFamily: style.fontFamily }))
   } else {
-    addFont(fontState, font, style)
+    addFont(font, style)
   }
 }
 
-export const addFontFallback = (fontState: FontCache, fontFamily: string, fallback: string) => {
-  fontState.fallbacks[fontFamily] = fallback
+export const addFontFallback = (fontFamily: string, fallback: string) => {
+  fontFallbacks[fontFamily] = fallback
 }
 
-export const fontForStyle = (fontState: FontCache, style, force = false) => {
+export const fontForStyle = (style, force = false) => {
   const key = keyFor(style)
-  if (fontState.fonts[key]) {
-    return fontState.fonts[key]
+  if (fonts[key]) {
+    return fonts[key]
   } else if (force) {
-    console.log(style)
-    console.log(new Error("NOPE").stack)
     throw new Error(`No font defined for ${key}`)
   }
 
   const fontDescriptor = fontManager.findFontSync({
     family: style.fontFamily,
     weight: Number(numberWeight(style.fontWeight)),
-    italic: style.fontStyle === "italic",
+    italic: style.fontStyle === "italic"
   })
 
   if (fontDescriptor) {
-    loadFont(fontState, fs.readFileSync(fontDescriptor.path))
+    loadFont(fs.readFileSync(fontDescriptor.path))
   }
 
-  return fontForStyle(fontState, style, true)
+  return fontForStyle(style, true)
 }
 
-export const fontWithFallbacks = (fontState: FontCache, fontFamily: string): string => (
-  fontState.fallbacks[fontFamily] ? `'${fontFamily}', ${fontState.fallbacks[fontFamily]}` : `'${fontFamily}'`
-)
+export const fontWithFallbacks = (fontFamily: string): string =>
+  fontFallbacks[fontFamily]
+    ? `'${fontFamily}', ${fontFallbacks[fontFamily]}`
+    : `'${fontFamily}'`

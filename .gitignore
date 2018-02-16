@@ -36,3 +36,4 @@ jspm_packages
 build
 
 error_log.txt
+.DS_Store
