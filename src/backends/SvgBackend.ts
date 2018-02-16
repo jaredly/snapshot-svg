@@ -1,92 +1,22 @@
 import * as cheerio from "cheerio"
 import { path } from "d3-path"
 import { fontForStyle } from "../fonts"
+import { lineFontSize, lineHeight } from "../text-layout"
+import { Backend } from "./types"
 
-export interface Backend {
-  beginShape: () => void
-  commitShape: (
-    params: { fill?: string; stroke?: string; lineWidth?: number }
-  ) => void
-  // TODO: Begin transform groups
-  measureText: (
-    text: string,
-    params: {
-      fontFamily?: string
-      fontWeight?: string
-      fontStyle?: string
-      fontSize?: number
-    }
-  ) => number
+const textAligns = {
+  left: 0,
+  center: 0.5,
+  right: 1
 }
 
-export class CanvasBackend implements Backend {
-  ctx: any
-
-  constructor(ctx) {
-    this.ctx = ctx
-  }
-
-  beginShape() {
-    this.ctx.beginPath()
-    return this.ctx
-  }
-
-  commitShape({ fill, stroke, lineWidth }) {
-    const { ctx } = this
-    if (fill != null) {
-      ctx.fillStyle = fill
-      ctx.fill()
-    }
-    if (stroke != null) {
-      ctx.strokeStyle = stroke
-      ctx.lineWidth = lineWidth
-      ctx.stroke()
-    }
-  }
-
-  applyTextStyle({
-    fontFamily = "Helvetica",
-    fontWeight = "normal",
-    fontStyle = "normal",
-    fontSize = 12
-  }) {
-    this.ctx.font = `${fontSize}px ${fontWeight} ${fontStyle} ${JSON.stringify(
-      fontFamily
-    )}`
-  }
-
-  fillLines(lines) {
-    const { ctx } = this
-
-    this.applyTextStyle(style)
-    lines.reduce((y, line) => {
-      const { text, attributedStyles } = line
-      const originY =
-        y +
-        lineBaseline(fontState, line) +
-        (lineHeight(line) - lineFontSize(line)) / 2
-
-      const tspans = attributedStyles.reduce((x, { start, end, style }, i) => {
-        const body =
-          i === attributedStyles.length - 1
-            ? text.slice(start, end).replace(/\s*$/, "")
-            : text.slice(start, end)
-        this.applyTextStyle(style)
-        ctx.fillText(body, x, y)
-        return x + ctx.measureText(text)
-      }, 0)
-
-      return y + lineHeight(line)
-    }, 0)
-  }
-
-  measureText(text, style) {
-    this.applyTextStyle(style)
-    return this.ctx.measureText(text)
-  }
+const textAnchors = {
+  left: "start",
+  center: "middle",
+  right: "end"
 }
 
-export class SvgBackend implements Backend {
+export default class SvgBackend implements Backend {
   ctx: any = null
   $: any
   $textContainer: any
@@ -128,9 +58,18 @@ export class SvgBackend implements Backend {
     this.ctx = null
   }
 
-  fillLines(lines, x, y) {
+  lineBaseline(line) {
+    line.attributedStyles
+      .map(({ style }) => {
+        const font = fontForStyle(style)
+        return font.ascent / font.unitsPerEm * style.fontSize
+      })
+      .reduce(Math.max, 0)
+  }
+
+  fillLines(lines, { top, left, width }) {
     const { textAlign = "left" as string } = lines[0].attributedStyles[0].style
-    const originX = width * textAligns[textAlign]
+    const originX = left + width * textAligns[textAlign]
 
     const $text = this.$(`<text />`).attr(
       "text-anchor",
@@ -141,7 +80,7 @@ export class SvgBackend implements Backend {
       const { text, attributedStyles } = line
       const originY =
         y +
-        lineBaseline(fontState, line) +
+        this.lineBaseline(line) +
         (lineHeight(line) - lineFontSize(line)) / 2
 
       const tspans = attributedStyles.forEach(({ start, end, style }, i) => {

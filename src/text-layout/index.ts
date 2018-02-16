@@ -1,5 +1,15 @@
 import * as LineBreaker from "linebreak"
-import { AttributedStyle, TextWithAttributedStyle } from "./extract-text"
+
+export interface AttributedStyle {
+  start: number
+  end: number
+  style: any
+}
+
+export interface TextWithAttributedStyle {
+  text: string
+  attributedStyles: AttributedStyle[]
+}
 
 const max = numbers => numbers.reduce(Math.max, 0)
 
@@ -22,17 +32,6 @@ export const lineHeight = (line: TextWithAttributedStyle): number =>
 export const lineFontSize = (line: TextWithAttributedStyle): number =>
   max(line.attributedStyles.map(({ style }) => style.fontSize))
 
-const baselineForAttributedStyle = (
-  backend,
-  { style }: AttributedStyle
-): number => {
-  const font = fontForStyle(fontState, style)
-  return font.ascent / font.unitsPerEm * style.fontSize
-}
-
-export const lineBaseline = (backend, line: TextWithAttributedStyle): number =>
-  max(line.attributedStyles.map(x => baselineForAttributedStyle(fontState, x)))
-
 const textSlice = (
   textStyle: TextWithAttributedStyle,
   start: number,
@@ -49,7 +48,6 @@ const textSlice = (
 })
 
 export const breakLines = (
-  backend,
   backend,
   textStyle: TextWithAttributedStyle,
   width: number
