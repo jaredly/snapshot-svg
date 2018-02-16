@@ -1,8 +1,11 @@
+import * as cheerio from "cheerio"
 import { path } from "d3-path"
 
 export interface Backend {
   beginShape: () => void
-  commitShape: (params: { fill?: string, stroke?: string, lineWidth?: number }) => void
+  commitShape: (
+    params: { fill?: string; stroke?: string; lineWidth?: number }
+  ) => void
   // TODO: Begin transform groups
 }
 
@@ -34,15 +37,50 @@ export class CanvasBackend implements Backend {
 
 export class SvgBackend implements Backend {
   ctx: any = null
-  svg: string = "" // Probably use some XML library, because this will get out of hand
+  $: any
+
+  constructor({ layout: { width, height } }) {
+    this.$ = cheerio.load(
+      `<?xml version="1.0" encoding="UTF-8" ?>
+      <svg
+        width="${width}"
+        height="${height}"
+        xmlns="http://www.w3.org/2000/svg"
+        xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"
+      >
+      </svg>`,
+      { xmlMode: true }
+    )
+  }
+
+  toString() {
+    return this.$.xml()
+  }
 
   beginShape() {
     this.ctx = path()
     return this.ctx
   }
 
-  commitShape({ fill = "none", stroke = "none", lineWidth }: { fill?: string, stroke?: string, lineWidth?: number }) {
-    this.svg +=
-      `<path d=${this.ctx.toString()} fill="${fill}" stroke="${stroke}" stroke-line-width="${lineWidth}" />`
+  commitShape({
+    fill = "none",
+    stroke = "none",
+    lineWidth = 0
+  }: {
+    fill?: string
+    stroke?: string
+    lineWidth?: number
+  }) {
+    if (fill !== "none" || !(stroke === "none" || lineWidth === 0)) {
+      this.$("svg").append(
+        `<path
+        d=${this.ctx.toString()}
+        fill="${fill}"
+        stroke="${stroke}"
+        stroke-width="${lineWidth}"
+      />`
+      )
+    }
+    this.ctx = null
   }
 }

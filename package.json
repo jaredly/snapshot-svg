@@ -13,9 +13,11 @@
     "@types/node": "^7.0.31",
     "babel-cli": "^6.24.1",
     "babel-jest": "^20.0.3",
+    "canvas-prebuilt": "^1.6.5-prerelease.1",
     "danger": "^0.18.0",
     "husky": "^0.13.3",
     "jest": "^21.0.1",
+    "jest-image-snapshot": "^2.3.0",
     "lint-staged": "^3.2.5",
     "prop-types": "^15.5.10",
     "react": "16.0.0-alpha.6",
@@ -66,7 +68,8 @@
     "preset": "react-native"
   },
   "dependencies": {
-    "canvas": "^2.0.0-alpha.9",
+    "cheerio": "^1.0.0-rc.2",
+    "d3-path": "^1.0.5",
     "font-manager": "^0.2.2",
     "fontkit": "^1.7.7",
     "image-size": "^0.6.2",

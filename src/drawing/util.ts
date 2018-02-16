@@ -1,6 +1,10 @@
 import { path } from "d3-path"
 
-export enum ContinuationCommand { MOVE, LINE, NONE }
+export enum ContinuationCommand {
+  MOVE,
+  LINE,
+  NONE
+}
 
 export const runContinuationCommand = (
   ctx: any,
@@ -36,10 +40,17 @@ export const drawArc = (
   }
 
   const h = 4 / 3 * Math.tan((endAngle - startAngle) / 4)
-  const sx =  cx + rx * Math.cos(startAngle)
+  const sx = cx + rx * Math.cos(startAngle)
   const sy = cy + ry * Math.sin(startAngle)
 
   runContinuationCommand(ctx, sx, sy, continuationCommand)
+
+  if (rx === 0 && ry === 0) {
+    return
+  } else if (rx === 0 && ry === 0) {
+    ctx.lineTo(cx + rx, cy + ry)
+    return
+  }
 
   ctx.bezierCurveTo(
     cx + rx * (Math.cos(startAngle) - h * Math.sin(startAngle)),

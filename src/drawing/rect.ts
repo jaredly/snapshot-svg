@@ -13,48 +13,46 @@ import {
   getBorderWidth,
   getScaledBorderRadius,
   scaleSides,
-  sidesEqual,
+  sidesEqual
 } from "./borders"
 
-export default (backend: Backend, layout, style: any, attributes) => {
+export default (backend: Backend, layout, style: any) => {
   const borderWidths = getBorderWidth(style)
   const borderColors = getBorderColor(style)
   const borderRadii = getScaledBorderRadius(style, layout.width, layout.height)
 
   const borderStyle: string = style.borderStyle || "solid"
-  const fill = style.backgroundColor || "none"
 
+  const borderInsets =
+    borderStyle === "solid" ? scaleSides(borderWidths, 0.5) : [0, 0, 0, 0]
   const backgroundCtx = backend.beginShape()
-  const borderInsets = borderStyle === "solid" ? scaleSides(borderWidths, 0.5) : [0, 0, 0, 0]
   drawRect(backgroundCtx, layout, borderRadii, borderInsets)
+  backend.commitShape({ fill: style.backgroundColor || "none" })
 
-  // Solid borders with consistent colors
-  if (sidesEqual(borderColors) && borderStyle === "solid") {
-    const borderCtx = backend.beginShape()
-    drawRect(borderCtx, layout, borderRadii, [0, 0, 0, 0])
-    backend.commitShape({ fill: borderColors[0] })
-
-  // The border is consistent, but it's not solid
-  } else if (sidesEqual(borderWidths) && sidesEqual(borderColors)) {
+  if (sidesEqual(borderWidths) && sidesEqual(borderColors)) {
+    // The border is consistent in width and colour. It doesn't matter if it's solid
+    // Draw a border with a line
     const [borderWidth = 0] = borderWidths
     const borderCtx = backend.beginShape()
     drawRect(borderCtx, layout, borderRadii, scaleSides(borderWidths, 0.5))
     backend.commitShape({ stroke: borderColors[0], lineWidth: borderWidth })
-
-  // Different colors, but solid
   } else if (borderStyle === "solid") {
+    // Solid border - use a filled shape
     borderColors.forEach((borderColor, side) => {
       const borderCtx = backend.beginShape()
       drawSideFill(borderCtx, layout, borderRadii, borderWidths, side)
       backend.commitShape({ fill: borderColor })
     })
-
-  // Different colors, not solid
   } else {
+    // Non-solid border. Use multiple lines.
+    // Will look bad when border width varies.
     borderColors.forEach((borderColor, side) => {
       const borderCtx = backend.beginShape()
       drawSideStroke(borderCtx, layout, borderRadii, borderWidths, side)
-      backend.commitShape({ stroke: borderColor, lineWidth: borderWidths[side] })
+      backend.commitShape({
+        stroke: borderColor,
+        lineWidth: borderWidths[side]
+      })
     })
   }
 }
