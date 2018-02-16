@@ -1,8 +1,8 @@
 import * as cheerio from "cheerio"
 import { path } from "d3-path"
 import { fontForStyle } from "../fonts"
-import { lineFontSize, lineHeight } from "../text-layout"
 import { Backend } from "./types"
+import { enumerateLines } from "./util"
 
 const textAligns = {
   left: 0,
@@ -46,14 +46,12 @@ export default class SvgBackend implements Backend {
 
   commitShape({ fill = "none", stroke = "none", lineWidth = 0 }) {
     if (fill !== "none" || !(stroke === "none" || lineWidth === 0)) {
-      this.$("svg").append(
-        `<path
-          d=${this.ctx.toString()}
-          fill="${fill}"
-          stroke="${stroke}"
-          stroke-width="${lineWidth}"
-        />`
-      )
+      this.$("svg")
+        .append(`<path />`)
+        .attr("d", this.ctx.toString)
+        .attr("fill", fill)
+        .attr("stroke", stroke)
+        .attr("stroke-width", lineWidth)
     }
     this.ctx = null
   }
@@ -76,28 +74,14 @@ export default class SvgBackend implements Backend {
       textAnchors[textAlign as string]
     )
 
-    const { textLines } = lines.reduce((y, line) => {
-      const { text, attributedStyles } = line
-      const originY =
-        y +
-        this.lineBaseline(line) +
-        (lineHeight(line) - lineFontSize(line)) / 2
-
-      const tspans = attributedStyles.forEach(({ start, end, style }, i) => {
-        $text
-          .append(`<tspan/>`)
-          .attr("x", i === 0 ? left + originX : null)
-          .attr("y", i === 0 ? originY : null)
-          .attr("fill", style.color)
-          .text(
-            i === attributedStyles.length - 1
-              ? text.slice(start, end).replace(/\s*$/, "")
-              : text.slice(start, end)
-          )
-      })
-
-      return y + lineHeight(line)
-    }, top)
+    enumerateLines(lines, ({ y, body, style, i }) => {
+      $text
+        .append(`<tspan/>`)
+        .attr("x", i === 0 ? left + originX : null)
+        .attr("y", i === 0 ? top + y : null)
+        .attr("fill", style.color)
+        .text(body)
+    })
 
     this.$("svg").append($text)
   }

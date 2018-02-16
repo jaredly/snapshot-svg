@@ -1,5 +1,5 @@
-import { lineFontSize, lineHeight } from "../text-layout"
 import { Backend } from "./types"
+import { enumerateLines } from "./util"
 
 const textAligns = {
   left: 0,
@@ -43,31 +43,19 @@ export default class CanvasBackend implements Backend {
     )}`
   }
 
-  fillLines(lines, { top, left, width }) {
+  fillLines(lines, { top, left }) {
     const { textAlign = "left" as string } = lines[0].attributedStyles[0].style
     const { ctx } = this
-    const originX = left + width * textAligns[textAlign]
 
     ctx.textBaseline = "top"
     ctx.textAlign = textAlign
 
-    lines.reduce((y, line) => {
-      const { text, attributedStyles } = line
-      const originY = y + (lineHeight(line) - lineFontSize(line)) / 2
-
-      const tspans = attributedStyles.reduce((x, { start, end, style }, i) => {
-        const body =
-          i === attributedStyles.length - 1
-            ? text.slice(start, end).replace(/\s*$/, "")
-            : text.slice(start, end)
-        this.applyTextStyle(style)
-        const textWidth = ctx.measureText(text)
-        ctx.fillText(body, x, y)
-        return x + textWidth
-      }, left)
-
-      return y + lineHeight(line)
-    }, top)
+    enumerateLines(lines, ({ x, y, body, style, i }) => {
+      this.applyTextStyle(style)
+      const textWidth = ctx.measureText(body)
+      ctx.fillText(body, left + x, top + y)
+      return x + textWidth
+    })
   }
 
   measureText(text, style) {
