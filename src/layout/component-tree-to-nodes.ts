@@ -3,8 +3,8 @@ import * as yoga from "yoga-layout"
 import componentToNode from "./component-to-node"
 import { Component, Settings } from "./index"
 
-const treeToNodes = (root: Component, settings: Settings) =>
-  recurseTree(root, settings, null)
+const treeToNodes = (backend, root: Component, settings: Settings) =>
+  recurseTree(backend, root, settings, null)
 
 export default treeToNodes
 
@@ -32,7 +32,12 @@ export const recurseTree = (
       if (typeof childComponent === "string") {
         throw new Error("Unexpected string child in non-Text node")
       }
-      const childNode = recurseTree(childComponent, settings, styleOverrides)
+      const childNode = recurseTree(
+        backend,
+        childComponent,
+        settings,
+        styleOverrides
+      )
       node.insertChild(childNode, index)
     }
   }

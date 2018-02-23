@@ -63,7 +63,6 @@ export const breakLines = (
 
   let bk: any = breaker.nextBreak()
   while (bk != null) {
-    console.log("RUN")
     const { position, required } = bk
     const testLine = textSlice(textStyle, lineStart, position)
     if (

@@ -34,11 +34,13 @@ export default class CanvasBackend implements Backend {
     fontFamily = "Helvetica",
     fontWeight = "normal",
     fontStyle = "normal",
-    fontSize = 12
+    fontSize = 12,
+    color = "black"
   }) {
     this.ctx.font = `${fontSize}px ${fontWeight} ${fontStyle} ${JSON.stringify(
       fontFamily
     )}`
+    this.ctx.fillStyle = color
   }
 
   fillLines(lines, { top, left }) {

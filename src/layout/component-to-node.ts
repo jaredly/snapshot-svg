@@ -260,7 +260,7 @@ const componentToNode = (
   }
 
   // We're in a node showing Text
-  if (component && component.type === "Text") {
+  if (component != null && component.type === "Text") {
     const styledText = extractText(component)
     component[textLines] = null
     node.setMeasureFunc(width => {

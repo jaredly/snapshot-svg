@@ -23,9 +23,9 @@ const renderBackend = async (
 }
 
 export const renderToSvg = async (root, settings) =>
-  String(renderBackend(new SvgBackend(), root, settings))
+  String(await renderBackend(new SvgBackend(), root, settings))
 
 export const renderToCanvas = async (ctx, root, settings) => {
-  renderBackend(new CanvasBackend(ctx), root, settings)
+  await renderBackend(new CanvasBackend(ctx), root, settings)
   return ctx
 }

@@ -16,7 +16,7 @@ const renderNode = (backend, node, settings) =>
   renderers[node.type](backend, node, settings)
 
 const recurseTree = async (backend, root, settings: Settings) => {
-  await enderNode(backend, root, settings)
+  await renderNode(backend, root, settings)
 
   if (!root.children) {
     return

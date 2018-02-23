@@ -1,4 +1,4 @@
-// import * as fontManager from "font-manager"
+import * as fontManager from "font-manager"
 import * as fontkit from "fontkit"
 import * as fs from "fs"
 
@@ -99,15 +99,15 @@ export const fontForStyle = (style, force = false) => {
     throw new Error(`No font defined for ${key}`)
   }
 
-  // const fontDescriptor = fontManager.findFontSync({
-  //   family: style.fontFamily,
-  //   weight: Number(numberWeight(style.fontWeight)),
-  //   italic: style.fontStyle === "italic"
-  // })
-  //
-  // if (fontDescriptor) {
-  //   loadFont(fs.readFileSync(fontDescriptor.path))
-  // }
+  const fontDescriptor = fontManager.findFontSync({
+    family: style.fontFamily,
+    weight: Number(numberWeight(style.fontWeight)),
+    italic: style.fontStyle === "italic"
+  })
+
+  if (fontDescriptor) {
+    loadFont(fs.readFileSync(fontDescriptor.path))
+  }
 
   return fontForStyle(style, true)
 }

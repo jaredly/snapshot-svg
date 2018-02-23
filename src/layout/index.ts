@@ -33,8 +33,8 @@ export interface Settings {
   height: number
 }
 
-export default (root: Component, settings: Settings) => {
-  const rootNode = componentTreeToNodeTree(root, settings)
+export default (backend, root: Component, settings: Settings) => {
+  const rootNode = componentTreeToNodeTree(backend, root, settings)
   if (!rootNode) {
     throw new Error("Unable to convert to node")
   }

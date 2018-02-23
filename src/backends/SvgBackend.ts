@@ -1,5 +1,6 @@
 import * as cheerio from "cheerio"
 import { path } from "d3-path"
+import * as format from "xml-formatter"
 import { fontForStyle } from "../fonts"
 import { Backend } from "./types"
 import { enumerateLines } from "./util"
@@ -27,14 +28,13 @@ export default class SvgBackend implements Backend {
       <svg
         xmlns="http://www.w3.org/2000/svg"
         xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"
-      >
-      </svg>`,
+      ></svg>`,
       { xmlMode: true }
     )
   }
 
   toString() {
-    return this.$.xml()
+    return format(this.$.xml())
   }
 
   setDimensions({ width, height }) {
@@ -50,12 +50,12 @@ export default class SvgBackend implements Backend {
 
   commitShape({ fill = "none", stroke = "none", lineWidth = 0 }) {
     if (fill !== "none" || !(stroke === "none" || lineWidth === 0)) {
-      this.$("svg")
-        .append(`<path />`)
+      const $path = this.$(`<path />`)
         .attr("d", String(this.ctx))
         .attr("fill", fill)
         .attr("stroke", stroke)
         .attr("stroke-width", lineWidth)
+      this.$("svg").append($path)
     }
     this.ctx = null
   }

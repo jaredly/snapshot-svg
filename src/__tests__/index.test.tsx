@@ -4,7 +4,7 @@ import { toMatchImageSnapshot } from "jest-image-snapshot"
 import * as React from "react"
 import { Text, View } from "react-native"
 import * as renderer from "react-test-renderer"
-import { renderToCanvas, renderToSvg } from "../.."
+import { renderToCanvas, renderToSvg } from ".."
 
 expect.extend({ toMatchImageSnapshot })
 

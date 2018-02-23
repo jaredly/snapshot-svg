@@ -76,6 +76,7 @@
     "linebreak": "^0.3.0",
     "nbind": "^0.3.12",
     "node-fetch": "^2.0.0",
+    "xml-formatter": "^1.0.1",
     "yoga-layout": "^1.5.0"
   }
 }

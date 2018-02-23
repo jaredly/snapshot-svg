@@ -1,7 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`render to svg 1`] = `
-"<?xml version=\\"1.0\\" encoding=\\"UTF-8\\" ?>
-      <svg width=\\"100\\" height=\\"50\\" xmlns=\\"http://www.w3.org/2000/svg\\" xmlns:xlink=\\"http://www.w3.org/1999/xlink\\" version=\\"1.1\\">
-      <path d=\\"M0,0L100,0L100,50L0,50L0,0Z\\" fill=\\"red\\" stroke=\\"none\\" stroke-width=\\"0\\"/></svg>"
-`;
