@@ -1,6 +1,6 @@
+import * as yoga from "yoga-layout"
 import componentTreeToNodeTree from "./component-tree-to-nodes"
 import renderedComponentTree from "./reapply-layouts-to-components"
-import * as yoga from "yoga-layout"
 
 export interface Component {
   type: string

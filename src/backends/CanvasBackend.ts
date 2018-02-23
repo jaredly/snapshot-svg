@@ -1,17 +1,15 @@
 import { Backend } from "./types"
 import { enumerateLines } from "./util"
 
-const textAligns = {
-  left: 0,
-  center: 0.5,
-  right: 1
-}
-
 export default class CanvasBackend implements Backend {
   ctx: any
 
   constructor(ctx) {
     this.ctx = ctx
+  }
+
+  setDimensions() {
+    // No implementation
   }
 
   beginShape() {

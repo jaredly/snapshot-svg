@@ -21,12 +21,10 @@ export default class SvgBackend implements Backend {
   $: any
   $textContainer: any
 
-  constructor({ layout: { width, height } }) {
+  constructor() {
     this.$ = cheerio.load(
       `<?xml version="1.0" encoding="UTF-8" ?>
       <svg
-        width="${width}"
-        height="${height}"
         xmlns="http://www.w3.org/2000/svg"
         xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"
       >
@@ -39,6 +37,12 @@ export default class SvgBackend implements Backend {
     return this.$.xml()
   }
 
+  setDimensions({ width, height }) {
+    this.$("svg")
+      .attr("width", width)
+      .attr("height", height)
+  }
+
   beginShape() {
     this.ctx = path()
     return this.ctx
@@ -48,7 +52,7 @@ export default class SvgBackend implements Backend {
     if (fill !== "none" || !(stroke === "none" || lineWidth === 0)) {
       this.$("svg")
         .append(`<path />`)
-        .attr("d", this.ctx.toString)
+        .attr("d", String(this.ctx))
         .attr("fill", fill)
         .attr("stroke", stroke)
         .attr("stroke-width", lineWidth)
@@ -69,10 +73,7 @@ export default class SvgBackend implements Backend {
     const { textAlign = "left" as string } = lines[0].attributedStyles[0].style
     const originX = left + width * textAligns[textAlign]
 
-    const $text = this.$(`<text />`).attr(
-      "text-anchor",
-      textAnchors[textAlign as string]
-    )
+    const $text = this.$(`<text />`).attr("text-anchor", textAnchors[textAlign])
 
     enumerateLines(lines, ({ y, body, style, i }) => {
       $text

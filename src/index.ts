@@ -11,22 +11,21 @@ const defaultSettings: Settings = {
   assetMap: {}
 }
 
-export const renderToSvg = async (
+const renderBackend = async (
+  backend,
   root,
   settings: Settings = defaultSettings
 ) => {
-  const formattedRoot = layoutRoot(root, settings)
-  const backend = new SvgBackend(formattedRoot)
+  const formattedRoot = layoutRoot(backend, root, settings)
+  backend.setDimensions(formattedRoot.layout)
   await render(backend, formattedRoot, settings)
-  return String(backend)
+  return backend
 }
 
-export const renderToCanvas = async (
-  ctx,
-  root,
-  settings: Settings = defaultSettings
-) => {
-  const formattedRoot = layoutRoot(root, settings)
-  const backend = new CanvasBackend(ctx)
-  await render(backend, formattedRoot, settings)
+export const renderToSvg = async (root, settings) =>
+  String(renderBackend(new SvgBackend(), root, settings))
+
+export const renderToCanvas = async (ctx, root, settings) => {
+  renderBackend(new CanvasBackend(ctx), root, settings)
+  return ctx
 }

@@ -1,4 +1,5 @@
 export interface Backend {
+  setDimensions: (layout: { width: number; height: number }) => void
   beginShape: () => void
   commitShape: (
     params: { fill?: string; stroke?: string; lineWidth?: number }
