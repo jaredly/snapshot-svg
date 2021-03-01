@@ -1,5 +1,5 @@
 import { ViewStyle } from "react-native"
-import * as yoga from "yoga-layout"
+import * as yoga from "yoga-layout-prebuilt"
 import * as path from "path"
 import { styleFromComponent, textLines } from "../layout/component-to-node"
 import textToSvg from "./text-to-svg"

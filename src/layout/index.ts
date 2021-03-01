@@ -1,5 +1,5 @@
 import * as renderer from "react-test-renderer"
-import * as yoga from "yoga-layout"
+import * as yoga from "yoga-layout-prebuilt"
 import componentTreeToNodeTree from "./component-tree-to-nodes"
 import renderedComponentTree from "./reapply-layouts-to-components"
 
@@ -24,14 +24,14 @@ export interface RenderedComponent {
 }
 
 export interface Settings {
-    superSample?: number,
-    backgroundColor?: string
-    basePath: string
-    renderPath: string
-    fontCache: FontCache
-    assetMap: {[key: string]: string}
-    width: number
-    height: number
+  superSample?: number
+  backgroundColor?: string
+  basePath: string
+  renderPath: string
+  fontCache: FontCache
+  assetMap: { [key: string]: string }
+  width: number
+  height: number
 }
 
 export default (root: renderer.ReactTestRendererJSON, settings: Settings) => {

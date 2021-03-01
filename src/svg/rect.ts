@@ -1,5 +1,5 @@
 import { ViewStyle } from "react-native"
-import * as yoga from "yoga-layout"
+import * as yoga from "yoga-layout-prebuilt"
 
 import { styleFromComponent } from "../layout/component-to-node"
 import { RenderedComponent } from "../layout/index"

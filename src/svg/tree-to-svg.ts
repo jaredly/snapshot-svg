@@ -1,4 +1,4 @@
-import * as yoga from "yoga-layout"
+import * as yoga from "yoga-layout-prebuilt"
 import { RenderedComponent, Settings } from "../layout"
 import nodeToSVG, { getOpacity } from "./node-to-svg"
 import { styleFromComponent } from "../layout/component-to-node"

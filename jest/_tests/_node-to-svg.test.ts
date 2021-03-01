@@ -1,4 +1,4 @@
-import * as yoga from "yoga-layout"
+import * as yoga from "yoga-layout-prebuilt"
 
 import nodeToSVG from "../svg/node-to-svg"
 import { fontState } from "../font-loader"
