@@ -2,7 +2,7 @@
 // Based on https://facebook.github.io/yoga/docs/api/javascript/
 //
 
-declare module "yoga-layout" {
+declare module "yoga-layout-prebuilt" {
   // https://github.com/facebook/yoga/blob/master/javascript/sources/YGEnums.js
   // and https://github.com/facebook/yoga/blob/master/gentest/gentest-javascript.js 5
 

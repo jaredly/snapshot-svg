@@ -1,4 +1,4 @@
-import * as yoga from "yoga-layout"
+import * as yoga from "yoga-layout-prebuilt"
 
 import * as renderer from "react-test-renderer"
 import { FontCache } from "./"

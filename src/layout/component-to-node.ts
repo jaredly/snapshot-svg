@@ -1,6 +1,6 @@
 import * as fs from "fs"
 import * as renderer from "react-test-renderer"
-import * as yoga from "yoga-layout"
+import * as yoga from "yoga-layout-prebuilt"
 import { Settings } from "./"
 import { FontCache } from "./"
 import extractText from "./extract-text"
